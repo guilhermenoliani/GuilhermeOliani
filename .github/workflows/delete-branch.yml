@@ -1,0 +1,22 @@
+name: Delete branch after merge
+
+on:
+  pull_request:
+    types:
+      - closed
+
+jobs:
+  delete_branch:
+    runs-on: ubuntu-latest
+    if: github.event.pull_request.merged == true
+    steps:
+      - name: Delete branch
+        run: |
+          git config --global user.name "${{ github.actor }}"
+          git config --global user.email "${{ github.actor }}@users.noreply.github.com"
+          BRANCH_NAME="${{ github.event.pull_request.head.ref }}"
+          if [ "$BRANCH_NAME" != "development" ]; then
+            git push origin --delete "$BRANCH_NAME"
+          fi
+        env:
+          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
