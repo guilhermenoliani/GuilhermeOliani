@@ -10,13 +10,16 @@ jobs:
     runs-on: ubuntu-latest
     if: github.event.pull_request.merged == true
     steps:
+      - name: Checkout the repository
+        uses: actions/checkout@v2
+        
       - name: Delete branch
         run: |
           git config --global user.name "${{ github.actor }}"
           git config --global user.email "${{ github.actor }}@users.noreply.github.com"
           BRANCH_NAME="${{ github.event.pull_request.head.ref }}"
           if [ "$BRANCH_NAME" != "development" ]; then
-            git push origin --delete "$BRANCH_NAME"
+            git push origin --delete "$BRANCH_NAME" || true
           fi
         env:
           GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
